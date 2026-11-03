@@ -1,5 +1,10 @@
-
+import {PencilIcon, Trash2} from "lucide-react"
 const EmployeeCard = ({employee, onDelete, onEdit}) => {
+
+  const handleDelete = async () => {
+    if(!confirm("Are you sure you want to delete this employee?"))
+      return
+  }
   return (
     <div className="group relative card card-hover overflow-hidden">
 
@@ -12,10 +17,22 @@ const EmployeeCard = ({employee, onDelete, onEdit}) => {
         </div>
       </div>
       
-      <div className="absolute top-3 left-3 flex gap-2">
+      <div className="absolute top-3 left-3 flex gap-2 bg-white rounded-md p-1 text-xs">
         <span>{employee.department || "Remote"}</span>
         {employee.isDeleted && <span className="bg-red-500/60 font-medium text-white px-2.5 py-1 text-xs rounded">DELETED</span>}
-      </div>
+      </div> 
+
+      {!employee.isDeleted &&  (
+        <div onClick={() => onEdit(employee)} className="absolute inset-0 bg-linear-to-t from-indigo-700/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6 gap-3">
+          <button className="p-2.5 bg-white/90 backdrop-blur-sm text-slate-700 hover:text-indigo-600 rounded-xl shadow-lg transition-all hover:scale-105"> 
+            <PencilIcon className="size-4" />
+          </button>
+          <button onClick={handleDelete} className="p-2.5 bg-white/90 backdrop-blur-sm text-slate-700 hover:text-rose-600 rounded-xl shadow-lg transition-all hover:scale-105 disabled:opacity-50">
+            <Trash2 className="size-4"/>
+          </button>
+
+        </div>
+      )}
 
       <div className="p-5">
         <h3 className="text-slate-900">{employee.firstName} {employee.lastName}</h3>

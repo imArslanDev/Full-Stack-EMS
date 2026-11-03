@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { dummyEmployeeData, DEPARTMENTS } from "../assets/assets";
-import { Plus, Search } from "lucide-react";
-import { EmployeeCard, Loading } from "../components";
+import { Plus, Search, X } from "lucide-react";
+import { EmployeeCard, EmployeeForm, Loading } from "../components";
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -42,7 +42,10 @@ const Employees = () => {
           <h1 className="page-title">Employees</h1>
           <p className="page-subtitle">Manage your team members</p>
         </div>
-        <button className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center">
+        <button
+          onClick={() => setShowCreateModel(!showCreateModel)}
+          className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
+        >
           <Plus size={16} /> Add Employee
         </button>
       </div>
@@ -91,6 +94,86 @@ const Employees = () => {
               />
             ))
           )}
+        </div>
+      )}
+
+      {/* Create Employee Model */}
+      {showCreateModel && (
+        <div
+          onClick={() => setShowCreateModel(false)}
+          className="fixed bg-black/40 backdrop-blur-sm inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto"
+        >
+          <div className="fixed inset-0" />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl my-8 animate-fade-in"
+          >
+            <div className="flex items-center justify-between p-6 pb-0">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Add New Employee
+                </h2>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  Create a user account and employee profile
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreateModel(false)}
+                className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <EmployeeForm
+                onSuccess={() => {
+                  setShowCreateModel(false)
+                  fetchEmployees();
+                }}
+                onCancel={() => setShowCreateModel(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Employee Model */}
+      {editEmployee && (
+        <div
+          onClick={() => setEditEmployee(null)}
+          className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto bg-black/40 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl my-8 animate-fade-in"
+          >
+            <div className="flex items-center justify-between p-6 pb-0">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Edit Employee
+                </h2>
+                <p className="text-sm text-slate-500 mt-0.5">
+                  Update employee details
+                </p>
+              </div>
+              <button
+                onClick={() => setEditEmployee(null)}
+                className="p-2 rounded-lg hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <EmployeeForm
+                initialData={editEmployee}
+                onSuccess={() => {
+                  setEditEmployee(null);
+                  fetchEmployees();
+                }}
+                onCancel={() => setEditEmployee(null)}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>
