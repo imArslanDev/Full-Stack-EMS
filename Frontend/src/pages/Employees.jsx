@@ -21,11 +21,11 @@ const Employees = () => {
     setTimeout(() => {
       setLoading(false);
     }, 1000);
-  }, []);
+  }, [selectDept]);
 
   useEffect(() => {
     fetchEmployees();
-  }, []);
+  }, [fetchEmployees]);
 
   // Search Filter
   const filtered = employees.filter((emp) =>
