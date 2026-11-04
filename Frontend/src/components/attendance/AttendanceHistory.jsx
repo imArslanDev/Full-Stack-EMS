@@ -20,7 +20,7 @@ const AttendanceHistory = ({history}) => {
             </tr>
           </thead>
           <tbody>
-            {history.table === 0 ? (
+            {history.length === 0 ? (
               <tr>
                 <td colSpan={6} className="text-center py-12 text-slate-400">
                   No records found
