@@ -15,6 +15,7 @@ import PayslipList from "./payslip/PayslipList";
 import GeneratePayslipForm from "./payslip/GeneratePayslipForm";
 import ProfileForm from "./ProfileForm";
 import ChangePaswordModal from "./ChangePaswordModal";
+import PrintPayslip from "../pages/PrintPayslip";
 
 export {
   LoginForm,
@@ -33,5 +34,6 @@ export {
   PayslipList,
   GeneratePayslipForm,
   ProfileForm,
-  ChangePaswordModal
+  ChangePaswordModal,
+  PrintPayslip
 };
