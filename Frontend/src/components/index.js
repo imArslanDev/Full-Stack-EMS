@@ -13,6 +13,8 @@ import LeaveHistory from "./leave/LeaveHistory";
 import ApplyLeaveModal from "./leave/ApplyLeaveModal";
 import PayslipList from "./payslip/PayslipList";
 import GeneratePayslipForm from "./payslip/GeneratePayslipForm";
+import ProfileForm from "./ProfileForm";
+import ChangePaswordModal from "./ChangePaswordModal";
 
 export {
   LoginForm,
@@ -29,5 +31,7 @@ export {
   LeaveHistory,
   ApplyLeaveModal,
   PayslipList,
-  GeneratePayslipForm
+  GeneratePayslipForm,
+  ProfileForm,
+  ChangePaswordModal
 };
