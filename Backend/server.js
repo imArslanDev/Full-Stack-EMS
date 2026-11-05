@@ -2,6 +2,7 @@ import express from "express"
 import cors from "cors"
 import "dotenv/config"
 import multer from "multer"
+import connectDB from "./config/db.js"
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -14,5 +15,8 @@ app.use(multer().none())
 // Routes
 app.get("/", (req, res) => res.send("Welcome Home"))
 
+
+
+await connectDB()
 app.listen(PORT, () => console.log(`Server is Listening on PORT:${PORT}`))
 
