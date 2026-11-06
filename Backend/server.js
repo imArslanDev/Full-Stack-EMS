@@ -3,6 +3,8 @@ import cors from "cors"
 import "dotenv/config"
 import multer from "multer"
 import connectDB from "./config/db.js"
+import authRouter from "./routes/auth.routes.js"
+import employeesRouter from "./routes/employee.routes.js"
 
 const app = express()
 const PORT = process.env.PORT || 4000
@@ -14,6 +16,8 @@ app.use(multer().none())
 
 // Routes
 app.get("/", (req, res) => res.send("Welcome Home"))
+app.use("/api/auth", authRouter)
+app.use("/api/employee", employeesRouter)
 
 
 
