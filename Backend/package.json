@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev" : "nodemon server.js",
+    "dev": "nodemon server.js",
     "start": "node server.js",
     "seed": "node seed.js"
   },
@@ -17,9 +17,11 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.9",
     "express": "^5.3.0",
+    "inngest": "^4.26.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.11.4",
-    "multer": "^2.5.0"
+    "multer": "^2.5.0",
+    "nodemailer": "^10.3.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
