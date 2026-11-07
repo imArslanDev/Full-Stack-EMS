@@ -31,7 +31,7 @@ const autoCheckOut = inngest.createFunction(
         body: ` <div style="max-width: 600px;">
                     <h2>Hi ${employee.firstName}, 👋</h2>
                     <p style="font-size: 16px;">You have a check-in in ${employee.department} today:</p>
-                    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${attendance?.checkIn?.toLocaleTimeString()}</p>
+                    <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${attendance?.checkIn?.toLocaleTimeString('en-US', { timeZone: 'Asia/Karachi' })}, PKT</p>
                     <p style="font-size: 16px;">Please make sure to check-out in one hour.</p>
                     <p style="font-size: 16px;">If you have any questions, please contact your admin.</p>
                     <br />
@@ -40,7 +40,7 @@ const autoCheckOut = inngest.createFunction(
                 </div>`,
       });
 
-      // After 10 hours, mark attendance as checked out with status "LATE"
+      // After 1 hour, mark attendance as checked out with status "LATE"
       await step.sleepUntil(
         "Wait-for-the-1-hour",
         new Date(new Date().getTime() + 1 * 60 * 60 * 1000),
@@ -51,20 +51,20 @@ const autoCheckOut = inngest.createFunction(
         attendance.checkOut =
           new Date(attendance.checkIn).getTime() + 4 * 60 * 60 * 1000;
         attendance.workingHours = 4;
-        ((attendance.dayType = "Half Day"),
-          (attendance.status = "LATE"),
-          await attendance.save());
+        attendance.dayType = "Half Day";
+        attendance.status = "LATE";
+        await attendance.save();
       }
     }
   },
 );
 
-// Send Eamil to admin, If Admin doesn't take action on leave application within 24 hours
+// Send Email to admin, If Admin doesn't take action on leave application within 24 hours
 const leaveApplicationReminder = inngest.createFunction(
   { id: "leave-application-reminder", triggers: [{ event: "leave/pending" }] },
   async ({ event, step }) => {
     const { leaveApplicationId } = event.data;
-    //   Wait for 24 hours
+    //  Wait for 24 hours
     await step.sleepUntil(
       "wait-for-the-24-hours",
       new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
@@ -81,7 +81,7 @@ const leaveApplicationReminder = inngest.createFunction(
         subject: `Leave Application Reminder`,
         body: ` <div style="max-width: 600px;">
                 <h2>Hi Admin, 👋</h2>
-                <p style="font-size: 16px;">You have a leave application in ${employee.department} today:</p>
+                <p style="font-size: 16px;">You have a leave application from ${employee.firstName} (${employee.department}):</p>
                 <p style="font-size: 18px; font-weight: bold; color: #007bff; margin: 8px 0;">${leaveApplication?.startDate?.toLocaleDateString()}</p>
                 <p style="font-size: 16px;">Please make sure to take action on this leave application.</p>
                 <br />
@@ -93,16 +93,16 @@ const leaveApplicationReminder = inngest.createFunction(
   },
 );
 
-// Cron: Check attendance at 11:30 AM IST (06:00 UTC) and email absent employees
+// Cron: Check attendance at 11:30 AM PKT (06:30 UTC) and email absent employees
 const attendanceReminderCron = inngest.createFunction(
-  { id: "attendance-reminder-cron", triggers: [{ cron: "0 0 6 * * *" }] }, //06:00 UTC = 11:30 AM IST
+  { id: "attendance-reminder-cron", triggers: [{ cron: "TZ=Asia/Karachi 30 11 * * *" }] }, // 06:30 UTC = 11:30 AM PKT
 
   async ({ step }) => {
-    // Step 1:  Get Today's Date Range (IST)
+    // Step 1:  Get Today's Date Range (PKT)
     const today = await step.run("get-today-date", () => {
       const startUTC = new Date(
-        new Date().toLocaleDateString("en-CA", { timeZone: "Asia/kolkata" }) +
-          "T00:00:00+05:30",
+        new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Karachi" }) +
+          "T00:00:00+05:00",
       );
       const endUTC = new Date(startUTC.getTime() + 24 * 60 * 60 * 1000);
       return { startUTC: startUTC.toISOString(), endUTC: endUTC.toISOString() };
@@ -150,23 +150,23 @@ const attendanceReminderCron = inngest.createFunction(
     if (absentEmployees.length > 0) {
       await step.run("send-reminder-emails", async () => {
         const emailPromises = absentEmployees.map((emp) => {
-          // Send Email
-          sendEmail({
+          return sendEmail({
             to: emp.email,
             subject: "Attendance Reminder - Please Mark Your Attendance",
             body: ` <div style="max-width: 600px; font-family: Arial, sans-serif;">
-                                <h2>Hi ${emp.firstName}, 👋</h2>
-                                <p style="font-size: 16px;">We noticed you haven't marked your attendance yet today.</p>
-                                <p style="font-size: 16px;">The deadline was <strong>11:30 AM</strong> and your attendance is still missing.</p>
-                                <p style="font-size: 16px;">Please check in as soon as possible or contact your admin if you're facing any issues.</p>
-                                <br />
-                                <p style="font-size: 14px; color: #666;">Department: ${emp.department}</p>
-                                <br />
-                                <p style="font-size: 16px;">Best Regards,</p>
-                                <p style="font-size: 16px;"><strong>QuickEMS</strong></p>
-                            </div>`,
+                            <h2>Hi ${emp.firstName}, 👋</h2>
+                            <p style="font-size: 16px;">We noticed you haven't marked your attendance yet today.</p>
+                            <p style="font-size: 16px;">The deadline was <strong>11:30 AM</strong> and your attendance is still missing.</p>
+                            <p style="font-size: 16px;">Please check in as soon as possible or contact your admin if you're facing any issues.</p>
+                            <br />
+                            <p style="font-size: 14px; color: #666;">Department: ${emp.department}</p>
+                            <br />
+                            <p style="font-size: 16px;">Best Regards,</p>
+                            <p style="font-size: 16px;"><strong>QuickEMS</strong></p>
+                        </div>`,
           });
         });
+        await Promise.all(emailPromises);
       });
     }
 
