@@ -13,32 +13,34 @@ import api from "../api/axios.js";
 import toast from "react-hot-toast";
 
 const Leave = () => {
-  const {user} = useAuth
+  const { user, loading: authLoading } = useAuth();
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const isAdmin = user?.role === "ADMIN";
 
-  const fetchLeaves = useCallback( async () => {
-    try {
-      const res = await api.get(`/leave`)
-      setLeaves(res.data.data || [])
-      if(res.data.employee?.isDeleted) setIsDeleted(true)
-      
-    } catch (error) {
-      toast.error(error?.response.data?.error || error.message)
-    } finally {
-      setLoading(false)
-    }
+  const fetchLeaves = useCallback(async () => {
+    if (!user) return;
 
-  }, []);
+    try {
+      const res = await api.get("/leave");
+      setLeaves(res.data.data || []);
+      setIsDeleted(Boolean(res.data.employee?.isDeleted));
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
-    fetchLeaves();
-  }, []);
+    if (!authLoading) {
+      fetchLeaves();
+    }
+  }, [authLoading, fetchLeaves]);
 
-  if (loading) return <Loading />;
+  if (authLoading || loading) return <Loading />;
 
   const approvedLeaves = leaves.filter((leave) => leave.status === "APPROVED");
   const sickCount = approvedLeaves.filter(
