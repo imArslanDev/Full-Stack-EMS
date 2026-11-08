@@ -2,37 +2,29 @@ import "dotenv/config"
 import connectDB from "./config/db.js"
 import User from "./models/User.model.js"
 import bcrypt from "bcrypt"
-const TemporaryPassword = 'temp1234'
-
 
 async function registerAdmin() {
     try {
         const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+        const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD
 
-        if(!ADMIN_EMAIL) {
-            console.log("Missing ADMIN_EMAIL env variable")
+        if(!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+            console.log("Missing ADMIN_EMAIL or ADMIN_PASSWORD env variable")
             process.exit(1)
         }
 
         await connectDB()
 
-        const existingAdmin = await User.findOne({email: process.env.ADMIN_EMAIL})
-        if(existingAdmin) {
-            console.log("User already exists as role", existingAdmin.role)
-            process.exit(0)
-        }
-
-        const hashedPassword = await bcrypt.hash(TemporaryPassword, 10)
-        const admin = await User.create({
-            email: process.env.ADMIN_EMAIL,
-            password: hashedPassword,
-            role: "ADMIN"
-        })
+        const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 10)
+        const admin = await User.findOneAndUpdate(
+            { email: ADMIN_EMAIL },
+            { email: ADMIN_EMAIL, password: hashedPassword, role: "ADMIN" },
+            { new: true, upsert: true, runValidators: true }
+        )
         
-        console.log("Admin user created")
-        console.log("\nEamil:", admin.email)
-        console.log("\nPassword:", TemporaryPassword)
-        console.log("\nChange the password after login.")
+        console.log("Admin user created or password reset")
+        console.log("\nEmail:", admin.email)
+        console.log("\nUse the ADMIN_PASSWORD value from Backend/.env to log in.")
 
         process.exit(0)
         
