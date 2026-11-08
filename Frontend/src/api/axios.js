@@ -4,13 +4,13 @@ const api = axios.create({
   baseURL: (import.meta.env.VITE_BASE_URL || "http://localhost:4000") + "/api",
 });
 
-// Attach Auth Token to All Network Requests
+// Attach Auth token to all network request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const token = localStorage.getItem("token")
+  if(token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
-  return config;
-});
+  return config
+})
 
-export default api;
+export default api

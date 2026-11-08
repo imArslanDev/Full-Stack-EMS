@@ -2,13 +2,45 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DEPARTMENTS } from "../assets/assets";
 import { Loader2Icon } from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../api/axios.js";
 
 const EmployeeForm = ({ initialData, onSuccess, onCancel }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const isEditMode = !!initialData;
+
+  const getEmployeeId = (employee) => {
+    const id = employee?.id ?? employee?._id;
+    if (typeof id === "string") return id;
+    if (id && typeof id === "object" && typeof id.$oid === "string") {
+      return id.$oid;
+    }
+    return "";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
+    const formData = new FormData(e.currentTarget)
+    if(isEditMode) {
+      const password = formData.get("password")
+      if(!password) formData.delete("password")
+    }
+  try {
+      const employeeId = getEmployeeId(initialData);
+      if (isEditMode && !employeeId) {
+        throw new Error("Employee ID is missing");
+      }
+      const url = isEditMode ? `/employees/${employeeId}` : "/employees";
+    const method = isEditMode ? "put" : "post"
+    await api[method](url, formData)
+    onSuccess ? onSuccess() : navigate("/employees")
+  } catch (error) {
+    toast.error(error.response?.data?.error || error.message);
+  } finally {
+    setLoading(false )
+  }
   };
   return (
     <form
@@ -45,7 +77,7 @@ const EmployeeForm = ({ initialData, onSuccess, onCancel }) => {
             <label className="block mb-2">Join Date</label>
             <input
               type="date"
-              name="phone"
+              name="joinDate"
               required
               defaultValue={
                 initialData?.joinDate

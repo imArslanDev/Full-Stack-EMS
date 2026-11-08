@@ -18,13 +18,13 @@ export const getEmployees = async (req, res) => {
 
     const result = employees.map((emp) => ({
       ...emp,
-      id: emp._id.toString()
-        ? { email: emp.userId.email, role: emp.userId.role }
-        : null,
+      id: emp._id.toString(), // ✅ Properly assign the string ID
+      user: emp.userId ? { email: emp.userId.email, role: emp.userId.role } : null // ✅ Assign user info safely
     }));
 
     return res.json(result);
   } catch (error) {
+    console.log("Get employees error:", error);
     return res.status(500).json({ error: "Failed to fetch employees" });
   }
 };

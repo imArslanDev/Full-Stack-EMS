@@ -5,7 +5,7 @@ import Employee from "../models/Employee.model.js";
 
 export const getProfile = async (req, res) => {
   try {
-    const session = req.session();
+    const session = req.session;
     const employee = await Employee.findOne({ userId: session.userId });
     if (!employee) {
       // Authenticated user is not an Employee - return Admin Profile
@@ -25,7 +25,7 @@ export const getProfile = async (req, res) => {
 // PUT /api/profile
 export const updateProfile = async (req, res) => {
   try {
-    const session = req.session();
+    const session = req.session;
     const employee = await Employee.findOne({ userId: session.userId });
 
     if (!employee) return res.status(404).json({ error: "Employee not found" });

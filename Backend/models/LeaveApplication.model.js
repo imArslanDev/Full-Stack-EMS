@@ -6,7 +6,7 @@ const leaveApplicationSchema = new mongoose.Schema({
     startDate: {type: Date, required: true},
     endDate: {type: Date, required: true},
     reason: {type: String, required: true},
-    status: {type: Date, enum: ["PENDING", "APPROVED", "REJECTED"], default: "PENDING"},
+    status: {type: String, enum: ["PENDING", "APPROVED", "REJECTED"], default: "PENDING"},
 
 }, {timestamps: true})
 

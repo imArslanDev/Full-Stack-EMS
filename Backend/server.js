@@ -24,7 +24,7 @@ app.use(multer().none())
 // Routes
 app.get("/", (req, res) => res.send("Welcome Home"))
 app.use("/api/auth", authRouter)
-app.use("/api/employee", employeesRouter)
+app.use("/api/employees", employeesRouter)
 app.use("/api/profile", profileRouter)
 app.use("/api/attendance", attendanceRouter)
 app.use("/api/leave", leaveRouter)
