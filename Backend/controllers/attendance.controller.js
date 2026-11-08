@@ -36,7 +36,7 @@ export const clockInOut = async (req, res) => {
 
       await inngest.send({
         name: "employee/check-out",
-        date: {
+        data: {
           employeeId: employee._id,
           attendanceId: attendance._id
         }
@@ -73,7 +73,7 @@ export const clockInOut = async (req, res) => {
 
 // Get attendance for employee
 // GET /api/attendance
-export const getAttendance = async (params) => {
+export const getAttendance = async (req, res) => {
   try {
     const session = req.session;
     const employee = await Employee.findOne({ userId: session.userId });

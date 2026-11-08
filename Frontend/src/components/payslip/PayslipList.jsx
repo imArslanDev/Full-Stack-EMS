@@ -16,7 +16,7 @@ const PayslipList = ({ payslips, isAdmin }) => {
             </tr>
           </thead>
           <tbody>
-            {[payslips].length === 0 ? (
+            {payslips.length === 0 ? (
               <tr>
                 <td
                   colSpan={isAdmin ? 5 : 4}
